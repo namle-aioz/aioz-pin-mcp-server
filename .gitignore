@@ -1,0 +1,18 @@
+# binary
+*.exe
+*.out
+*.test
+
+# go
+bin/
+vendor/
+
+# env
+.env
+
+# IDE
+.vscode/
+.idea/
+
+app
+weather-mcp

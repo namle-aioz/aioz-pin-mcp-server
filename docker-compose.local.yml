@@ -1,0 +1,7 @@
+services:
+  app:
+    build: .
+    container_name: go-app
+    ports:
+      - "8088:${SERVER_PORT}"
+    restart: unless-stopped
