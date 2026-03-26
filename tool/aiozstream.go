@@ -82,7 +82,8 @@ func PinByCID(ctx context.Context, input *model.PinByCIDInput) (map[string]inter
 }
 
 func GetPinDetails(ctx context.Context, input *model.GetPinDetailsInput) (map[string]interface{}, error) {
-	return util.MakePinningRequest(fmt.Sprintf("pinning/%s", input.PinID), "GET", "", input.APIKey, input.SecretKey)
+	url := fmt.Sprintf("pinning/%s", input.PinID)
+	return util.MakePinningRequest(url, "GET", "", input.APIKey, input.SecretKey)
 }
 
 func ListPins(ctx context.Context, input *model.ListPinsInput) (map[string]interface{}, error) {
@@ -95,21 +96,26 @@ func ListPins(ctx context.Context, input *model.ListPinsInput) (map[string]inter
 		url.QueryEscape(input.SortOrder),
 	)
 
-	return util.MakePinningRequest(fmt.Sprintf("pinning/pins/?%s", query), "GET", "", input.APIKey, input.SecretKey)
+	url := fmt.Sprintf("pinning/pins/?%s", query)
+	return util.MakePinningRequest(url, "GET", "", input.APIKey, input.SecretKey)
 }
 
 func Unpin(ctx context.Context, input *model.UnpinInput) (map[string]interface{}, error) {
-	return util.MakePinningRequest(fmt.Sprintf("pinning/unpin/%s", input.PinID), "DELETE", "", input.APIKey, input.SecretKey)
+	url := fmt.Sprintf("pinning/unpin/%s", input.PinID)
+	return util.MakePinningRequest(url, "DELETE", "", input.APIKey, input.SecretKey)
 }
 
 func GetHistoryUsageData(ctx context.Context, input *model.HistoryUsageInput) (map[string]interface{}, error) {
-	return util.MakePinningRequest(fmt.Sprintf("billing/historyUsage?offset=%d&limit=%d", input.Offset, input.Limit), "GET", "", input.APIKey, input.SecretKey)
+	url := fmt.Sprintf("billing/historyUsage?offset=%d&limit=%d", input.Offset, input.Limit)
+	return util.MakePinningRequest(url, "GET", "", input.APIKey, input.SecretKey)
 }
 
 func GetTopUp(ctx context.Context, input *model.HistoryUsageInput) (map[string]interface{}, error) {
-	return util.MakePinningRequest(fmt.Sprintf("billing/topUp?offset=%d&limit=%d", input.Offset, input.Limit), "GET", "", input.APIKey, input.SecretKey)
+	url := fmt.Sprintf("billing/topUp?offset=%d&limit=%d", input.Offset, input.Limit)
+	return util.MakePinningRequest(url, "GET", "", input.APIKey, input.SecretKey)
 }
 
 func GetMonthUsageData(ctx context.Context, input *model.HistoryUsageInput) (map[string]interface{}, error) {
-	return util.MakePinningRequest(fmt.Sprintf("billing/thisMonthUsage?offset=%d&limit=%d", input.Offset, input.Limit), "GET", "", input.APIKey, input.SecretKey)
+	url := fmt.Sprintf("billing/thisMonthUsage?offset=%d&limit=%d", input.Offset, input.Limit)
+	return util.MakePinningRequest(url, "GET", "", input.APIKey, input.SecretKey)
 }

@@ -125,6 +125,7 @@ func HandlePinFilesOrDirectory(
 	}
 
 	result := fmt.Sprintf("Pinned successfully: %+v", resp)
+
 	return mcp.NewToolResultText(result), nil
 }
 
@@ -148,6 +149,7 @@ func HandlePinByCID(
 	}
 
 	result := fmt.Sprintf("Pinned by CID successfully: %+v", resp)
+
 	return mcp.NewToolResultText(result), nil
 }
 
@@ -171,6 +173,7 @@ func HandleGetPinDetails(
 	}
 
 	result := fmt.Sprintf("Pin details retrieved successfully: %+v", resp)
+
 	return mcp.NewToolResultText(result), nil
 }
 
@@ -194,6 +197,7 @@ func HandleListPins(
 	}
 
 	result := fmt.Sprintf("Pins listed successfully: %+v", resp)
+
 	return mcp.NewToolResultText(result), nil
 }
 
@@ -217,6 +221,7 @@ func HandleUnpin(
 	}
 
 	result := fmt.Sprintf("Unpinned successfully: %+v", resp)
+
 	return mcp.NewToolResultText(result), nil
 }
 
@@ -240,6 +245,7 @@ func HandleGetHistoryUsageData(
 	}
 
 	result := fmt.Sprintf("History usage data retrieved successfully: %+v", resp)
+
 	return mcp.NewToolResultText(result), nil
 }
 
@@ -263,6 +269,7 @@ func HandleGetTopUp(
 	}
 
 	result := fmt.Sprintf("Top-up data retrieved successfully: %+v", resp)
+
 	return mcp.NewToolResultText(result), nil
 }
 
@@ -286,5 +293,6 @@ func HandleGetMonthUsageData(
 	}
 
 	result := fmt.Sprintf("Month usage data retrieved successfully: %+v", resp)
+
 	return mcp.NewToolResultText(result), nil
 }

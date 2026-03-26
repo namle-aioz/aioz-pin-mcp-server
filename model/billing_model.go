@@ -1,26 +1,22 @@
 package model
 
-import (
-	"fmt"
-)
+import "fmt"
 
 type HistoryUsageInput struct {
-	Offset    int
-	Limit     int
-	APIKey    string
-	SecretKey string
+	Offset int
+	Limit  int
+	AuthInput
 }
 
 func ValidateHistoryUsageInput(args map[string]interface{}) (*HistoryUsageInput, error) {
 	input := &HistoryUsageInput{}
 
-	if apiKey, ok := args["pinningApiKey"].(string); ok {
-		input.APIKey = apiKey
+	authInput, err := ValidateAuthInput(args)
+	if err != nil {
+		return nil, err
 	}
 
-	if secretKey, ok := args["pinningSecretKey"].(string); ok {
-		input.SecretKey = secretKey
-	}
+	input.AuthInput = *authInput
 
 	if offset, ok := args["offset"].(float64); ok {
 		input.Offset = int(offset)
@@ -30,12 +26,11 @@ func ValidateHistoryUsageInput(args map[string]interface{}) (*HistoryUsageInput,
 		input.Limit = int(limit)
 	}
 
-	if input.APIKey == "" {
-		return &HistoryUsageInput{}, fmt.Errorf("pinningApiKey is required")
+	if input.Limit <= 0 {
+		return &HistoryUsageInput{}, fmt.Errorf("limit must be greater than 0")
 	}
-
-	if input.SecretKey == "" {
-		return &HistoryUsageInput{}, fmt.Errorf("pinningSecretKey is required")
+	if input.Offset < 0 {
+		return &HistoryUsageInput{}, fmt.Errorf("offset must be greater than or equal to 0")
 	}
 
 	return input, nil
