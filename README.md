@@ -1,15 +1,15 @@
-# AIOZ MCP Server
+# AIOZ Pin MCP Server
 
-A [Model Context Protocol (MCP)](https://modelcontextprotocol.io/) server written in Go that integrates with [AIOZ Stream](https://aiozstream.network/) for media management and live streaming.
+A [Model Context Protocol (MCP)](https://modelcontextprotocol.io/) server written in Go that integrates with [AIOZ Pin](https://pin.aioz.io/) for decentralized file pinning to IPFS and API key management.
 
 ---
 
 ## Features
 
-- **Media Statistics**: Count total videos and audios in an AIOZ Stream account.
-- **Video Management**: List videos, search by name, and retrieve playback URLs.
-- **Video Upload**: Upload video files to AIOZ Stream directly from a Google Drive link.
-- **Live Streaming**: Create live stream keys for broadcasting.
+- **API Key Management**: Generate, list, and delete API keys with granular permissions.
+- **IPFS Pinning**: Pin files and directories to IPFS by URL or CID hash.
+- **Pin Management**: Retrieve pin details, list pins, and unpin content.
+- **Usage Analytics**: Track historical usage, monthly data, and top-up information.
 
 ---
 
@@ -17,119 +17,153 @@ A [Model Context Protocol (MCP)](https://modelcontextprotocol.io/) server writte
 
 ---
 
-### `count-total-media`
+### API Key Management Tools
 
-Get the total number of videos and audios in an AIOZ Stream account.
+#### `generate-api-key`
 
-| Parameter   | Type   | Required | Description            |
-| ----------- | ------ | -------- | ---------------------- |
-| `publicKey` | string | Yes      | AIOZ Stream public key |
-| `secretKey` | string | Yes      | AIOZ Stream secret key |
+Generate an AIOZ Pin API key with customizable permissions. Admin keys grant full access to all scopes, while regular keys require at least one specific permission.
 
-**Output example:**
-
-```
-AIOZ Stream Account Stats:
-Videos: 42
-Audios: 15
-```
-
----
-
-### `get-video-url`
-
-Search for a video by name and retrieve all its playback and asset URLs.
-
-| Parameter   | Type   | Required | Description                                   |
-| ----------- | ------ | -------- | --------------------------------------------- |
-| `publicKey` | string | Yes      | AIOZ Stream public key                        |
-| `secretKey` | string | Yes      | AIOZ Stream secret key                        |
-| `videoName` | string | Yes      | Name (or partial name) of the video to search |
-
-**Output example:**
-
-```json
-{
-  "EmbededURL": "https://...",
-  "Mp4URL": "https://...",
-  "Thumbnail": "https://...",
-  "SourceURL": "https://..."
-}
-```
+| Parameter       | Type    | Required | Description                               |
+| --------------- | ------- | -------- | ----------------------------------------- |
+| `jwtToken`      | string  | Yes      | JWT token for authorization               |
+| `keyName`       | string  | Yes      | Name of the API key                       |
+| `admin`         | boolean | Yes      | If true, grants full access to all scopes |
+| `pinList`       | boolean | Yes      | Allow listing pins                        |
+| `nftList`       | boolean | Yes      | Allow listing NFTs                        |
+| `unpin`         | boolean | Yes      | Allow unpinning content                   |
+| `pinByHash`     | boolean | Yes      | Allow pinning by hash                     |
+| `pinFileToIPFS` | boolean | Yes      | Allow uploading files to IPFS             |
+| `unpinNFT`      | boolean | Yes      | Allow unpinning NFTs                      |
+| `pinNFTToIPFS`  | boolean | Yes      | Allow uploading NFTs to IPFS              |
 
 ---
 
-### `get-list-video`
+#### `get-list-api-keys`
 
-Get a list of all videos in an AIOZ Stream account.
+Retrieve a list of all AIOZ Pin API keys.
 
-| Parameter   | Type   | Required | Description pen        |
-| ----------- | ------ | -------- | ---------------------- |
-| `publicKey` | string | Yes      | AIOZ Stream public key |
-| `secretKey` | string | Yes      | AIOZ Stream secret key |
-
-**Output example:**
-
-```json
-[
-  {
-    "MediaID": "abc123",
-    "Name": "My Video",
-    "Size": 104857600,
-    "Duration": 120.5,
-    "CreatedAt": "2024-01-15T10:00:00Z"
-  }
-]
-```
+| Parameter  | Type   | Required | Description                 |
+| ---------- | ------ | -------- | --------------------------- |
+| `jwtToken` | string | Yes      | JWT token for authorization |
 
 ---
 
-### `upload-video`
+#### `delete-api-key`
 
-Upload a video from a Google Drive link to an AIOZ Stream account. The server automatically:
+Delete an AIOZ Pin API key.
 
-1. Validates the Google Drive link format
-2. Converts it to a direct download URL
-3. Downloads the video file
-4. Uploads it to AIOZ Stream with the specified title
-
-| Parameter   | Type   | Required | Description                                      |
-| ----------- | ------ | -------- | ------------------------------------------------ |
-| `publicKey` | string | Yes      | AIOZ Stream public key                           |
-| `secretKey` | string | Yes      | AIOZ Stream secret key                           |
-| `videoLink` | string | Yes      | Google Drive shareable link to the video file    |
-| `title`     | string | Yes      | Title/name for the uploaded video on AIOZ Stream |
-
-**Supported Google Drive Link Format Or Link Can Download:**
-
-```
-https://drive.google.com/file/d/{FILE_ID}/view?usp=sharing
-https://api.aiozstream.network/api/media/video/mp4
-```
-
-**Output example:**
-
-```
-Video uploaded successfully
-```
+| Parameter  | Type   | Required | Description                 |
+| ---------- | ------ | -------- | --------------------------- |
+| `jwtToken` | string | Yes      | JWT token for authorization |
+| `keyId`    | string | Yes      | ID of the API key to delete |
 
 ---
 
-### `create-key-live`
+### Pinning Tools
 
-Create a live stream key in an AIOZ Stream account.
+#### `pin-files-or-directory`
 
-| Parameter   | Type   | Required | Description                   |
-| ----------- | ------ | -------- | ----------------------------- |
-| `publicKey` | string | Yes      | AIOZ Stream public key        |
-| `secretKey` | string | Yes      | AIOZ Stream secret key        |
-| `keyName`   | string | Yes      | Display name for the live key |
+Pin a file to IPFS using the provided pinning API key and secret key. The server downloads the file from a publicly accessible URL and uploads it to IPFS.
 
-**Output example:**
+| Parameter          | Type   | Required | Description                  |
+| ------------------ | ------ | -------- | ---------------------------- |
+| `fileUrl`          | string | Yes      | Public downloadable file URL |
+| `pinningApiKey`    | string | Yes      | AIOZ Pinning API key         |
+| `pinningSecretKey` | string | Yes      | AIOZ Pinning secret key      |
 
-```
-Key created successfully to AIOZ Stream with name: my-stream-key
-```
+---
+
+#### `pin-by-cid`
+
+Pin content to IPFS by CID hash using pinning API key and secret key.
+
+| Parameter          | Type   | Required | Description                               |
+| ------------------ | ------ | -------- | ----------------------------------------- |
+| `hashToPin`        | string | Yes      | CID hash to pin                           |
+| `metadataName`     | string | No       | Optional name metadata for pinned content |
+| `pinningApiKey`    | string | Yes      | AIOZ Pinning API key                      |
+| `pinningSecretKey` | string | Yes      | AIOZ Pinning secret key                   |
+
+---
+
+#### `get-pin-details`
+
+Get pin details by pin ID.
+
+| Parameter          | Type   | Required | Description             |
+| ------------------ | ------ | -------- | ----------------------- |
+| `pinId`            | string | Yes      | Pin ID to fetch details |
+| `pinningApiKey`    | string | Yes      | AIOZ Pinning API key    |
+| `pinningSecretKey` | string | Yes      | AIOZ Pinning secret key |
+
+---
+
+#### `list-pins`
+
+List pins with pagination and sorting options.
+
+| Parameter          | Type    | Required | Description                           |
+| ------------------ | ------- | -------- | ------------------------------------- |
+| `offset`           | number  | No       | Pagination offset, default 0          |
+| `limit`            | number  | No       | Pagination limit, default 10          |
+| `pinned`           | boolean | No       | Filter by pinned state, default true  |
+| `sortBy`           | string  | No       | Sort field, default name              |
+| `sortOrder`        | string  | No       | Sort order (ASC or DESC), default ASC |
+| `pinningApiKey`    | string  | Yes      | AIOZ Pinning API key                  |
+| `pinningSecretKey` | string  | Yes      | AIOZ Pinning secret key               |
+
+---
+
+#### `unpin-file`
+
+Remove a pinned file by pin ID.
+
+| Parameter          | Type   | Required | Description             |
+| ------------------ | ------ | -------- | ----------------------- |
+| `pinId`            | string | Yes      | Pin ID to remove        |
+| `pinningApiKey`    | string | Yes      | AIOZ Pinning API key    |
+| `pinningSecretKey` | string | Yes      | AIOZ Pinning secret key |
+
+---
+
+### Usage Tools
+
+#### `get-history-usage-data`
+
+Get history usage data details with pagination.
+
+| Parameter          | Type   | Required | Description                  |
+| ------------------ | ------ | -------- | ---------------------------- |
+| `offset`           | string | Yes      | Pagination offset, default 0 |
+| `limit`            | string | Yes      | Pagination limit, default 10 |
+| `pinningApiKey`    | string | Yes      | AIOZ Pinning API key         |
+| `pinningSecretKey` | string | Yes      | AIOZ Pinning secret key      |
+
+---
+
+#### `get-top-up`
+
+Get top-up data details with pagination.
+
+| Parameter          | Type   | Required | Description                  |
+| ------------------ | ------ | -------- | ---------------------------- |
+| `offset`           | string | Yes      | Pagination offset, default 0 |
+| `limit`            | string | Yes      | Pagination limit, default 10 |
+| `pinningApiKey`    | string | Yes      | AIOZ Pinning API key         |
+| `pinningSecretKey` | string | Yes      | AIOZ Pinning secret key      |
+
+---
+
+#### `get-month-usage-data`
+
+Get monthly usage data details with pagination.
+
+| Parameter          | Type   | Required | Description                  |
+| ------------------ | ------ | -------- | ---------------------------- |
+| `offset`           | string | Yes      | Pagination offset, default 0 |
+| `limit`            | string | Yes      | Pagination limit, default 10 |
+| `pinningApiKey`    | string | Yes      | AIOZ Pinning API key         |
+| `pinningSecretKey` | string | Yes      | AIOZ Pinning secret key      |
 
 ---
 
@@ -340,21 +374,28 @@ docker compose -f docker-compose.local.yml up --build
 
 ```
 .
-├── main.go                        # Entry point, MCP server and tool registration
+├── main.go                               # Entry point, MCP server and tool registration
 ├── handler/
-│   ├── aiozstream_handler.go      # MCP tool handlers for AIOZ Stream
-│   ├── register_handler.go        # Register MCP tool handlers for AIOZ Stream
-├── tool/
-│   ├── aiozstream.go              # AIOZ Stream API client logic
-├── pkg/
-│   └── cache
-│         └── cache                # Init caching variable
+│   ├── register_handler.go               # Main tool registration
+│   ├── register_api_key_tools.go         # API key management tool handlers and registration
+│   ├── register_pinning_tools.go         # IPFS pinning tool handlers and registration
+│   ├── register_usage_tools.go           # Usage analytics tool handlers and registration
+│   ├── aiozstream_handler.go             # AIOZ Stream tool handlers (legacy)
+├── middleware/
+│   └── auth_middleware.go                # JWT authentication middleware
 ├── model/
-│   └── client_upload_model.go     # Shared data models
+│   ├── auth_model.go                     # Authentication models
+│   ├── billing_model.go                  # Billing models
+│   ├── generate_key_model.go             # API key generation models
+│   ├── pin_files_model.go                # Pin file models
+│   ├── pinning_model.go                  # Pinning models
+├── tool/
+│   └── aiozstream.go                     # AIOZ API client logic
+├── pkg/
+│   └── cache/
+│         └── init_cache.go               # Cache initialization
 ├── util/
-│   ├── drive.go                   # Drive func util
-├── constant/
-│   ├── file_constant.go           # Variable constant
+│   └── make_request.go                   # HTTP request utilities
 ├── go.mod
 ├── Dockerfile
 └── docker-compose.local.yml
